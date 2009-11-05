@@ -8,7 +8,7 @@ handlers:
   static_dir: static
 - url: /adump
   script: dumper.py
-- url: /avatar
+- url: /avatar/.*
   script: avatar.py
 - url: /gen
   script: gen.py

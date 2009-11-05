@@ -42,7 +42,7 @@ def custom_encode(obj):
 
 class MainHandler(webapp.RequestHandler):
 
-    def get(self):
+    def get(self, name):
         a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
         t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', a.x, a.y
                         ).get()
@@ -51,7 +51,7 @@ class MainHandler(webapp.RequestHandler):
         self.response.headers['Content-type'] = 'text/plain'
         self.response.out.write(ret_json)
 
-    def post(self):
+    def post(self, name):
         self.response.headers['Content-type'] = 'text/plain'
         try:
             move = int(cgi.escape(self.request.get('move')))
@@ -78,7 +78,7 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(ret_json)
 
 def main():
-    application = webapp.WSGIApplication([('/avatar', MainHandler)],
+    application = webapp.WSGIApplication([('/avatar/([^/]*)', MainHandler)],
                                             debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
