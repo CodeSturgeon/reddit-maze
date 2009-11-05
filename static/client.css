@@ -1,0 +1,38 @@
+td.wall {
+	background-color: #4c4c4c;
+}
+
+td.shade {
+	background-color: #808080;
+}
+
+td.clear {
+	background-color: #b3b3b3;
+}
+td.avatar {
+	background-color: #007eff;
+}
+
+td.other {
+	background-color: #9800ff;
+}
+td {
+	width: 4px;
+	height: 6px;
+	text-align: center;
+}
+th {
+	border-width: 1px;
+	border-style: solid;
+}
+th.ddiget {
+	line-height: .85em;
+}
+table#placeholder {
+	border-collapse: collapse;
+	margin: auto;
+}
+
+div#buttons {
+	text-align: center;
+}
