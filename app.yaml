@@ -6,6 +6,8 @@ api_version: 1
 handlers:
 - url: /adump
   script: dumper.py
+- url: /avatar
+  script: avatar.py
 - url: /gen
   script: gen.py
 - url: .*

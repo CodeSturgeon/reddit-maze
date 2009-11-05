@@ -20,8 +20,9 @@
 
 import wsgiref.handlers
 import random
-from model import Tile
+from model import Tile, Avatar
 from google.appengine.ext import db
+import pickle
 
 from google.appengine.ext import webapp
 
@@ -86,9 +87,16 @@ class MainHandler(webapp.RequestHandler):
 
   def get(self):
     db.delete(Tile.all())
+    db.delete(Avatar.all())
     cleared = make_maze(10,10)
     for t in cleared:
-        Tile(x=t[0], y=t[1], view_blob='123').put()
+        view = []
+        for vy in range(t[1]-2,t[1]+2):
+            for vx in range(t[0]-2,t[0]+2):
+                if (vx,vy) in cleared:
+                    view.append({'x':vx, 'y':vy})
+        Tile(x=t[0], y=t[1], view_blob=pickle.dumps(view, 2)).put()
+    Avatar(x=0,y=0,name='jack').put()
     self.response.out.write('Generator %s'%cleared)
 
 def main():
