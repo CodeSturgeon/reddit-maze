@@ -18,12 +18,8 @@
     </div>
 </body>
 <script type='text/javascript'>
-    var x_max = 10;
-    var y_max = 10;
     var avatar_name = 'jack';
-    var base_url = 'http://localhost:8081';
-    //var pos_url = base_url+'/avatars/'+avatar_name;
-    var pos_url = base_url+'/avatar'
+    var pos_url = '/avatar'
     jQuery(document).ready(function(){
         jQuery.get(pos_url,{},handle_update,'json');
     })

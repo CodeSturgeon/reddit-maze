@@ -95,7 +95,7 @@ var handle_update = function(){
     return function(json){
         if(last_run=='first_run'){
             //make_maze(json.maze.width, json.maze.height);
-            make_maze(10,10);
+            make_maze(20,20);
         }
 
         clear_tiles(json.tiles);

@@ -26,6 +26,7 @@ import pickle
 
 from google.appengine.ext import webapp
 
+view_radius = 2
 
 def make_maze(width,height):
     # Four basic direction vectors
@@ -88,11 +89,11 @@ class MainHandler(webapp.RequestHandler):
   def get(self):
     db.delete(Tile.all())
     db.delete(Avatar.all())
-    cleared = make_maze(10,10)
+    cleared = make_maze(20,20)
     for t in cleared:
         view = []
-        for vy in range(t[1]-2,t[1]+2):
-            for vx in range(t[0]-2,t[0]+2):
+        for vy in range(t[1]-view_radius,t[1]+view_radius+1):
+            for vx in range(t[0]-view_radius,t[0]+view_radius+1):
                 if (vx,vy) in cleared:
                     view.append({'x':vx, 'y':vy})
         Tile(x=t[0], y=t[1], view_blob=pickle.dumps(view, 2)).put()
