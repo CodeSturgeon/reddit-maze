@@ -4,5 +4,9 @@ runtime: python
 api_version: 1
 
 handlers:
+- url: /adump
+  script: dumper.py
+- url: /gen
+  script: gen.py
 - url: .*
   script: main.py
