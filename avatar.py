@@ -26,6 +26,12 @@ from google.appengine.ext import webapp
 from model import Tile, Avatar
 from google.appengine.ext import db
 import simplejson as json
+import cgi
+
+import logging
+log = logging.getLogger()
+
+shape_vector = {1: (0,-1), 4: (0,1), 8: (-1,0), 2: (1,0)}
 
 def custom_encode(obj):
     try:
@@ -36,19 +42,45 @@ def custom_encode(obj):
 
 class MainHandler(webapp.RequestHandler):
 
-  def get(self):
-    a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
-    t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', a.x, a.y
-                    ).get()
-    ret = {'avatar':a, 'tiles':t}
-    ret_json = json.dumps(ret,indent=2,default=custom_encode)
-    self.response.headers['Content-type'] = 'text/plain'
-    self.response.out.write(ret_json)
+    def get(self):
+        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
+        t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', a.x, a.y
+                        ).get()
+        ret = {'avatar':a, 'tiles':t}
+        ret_json = json.dumps(ret,indent=2,default=custom_encode)
+        self.response.headers['Content-type'] = 'text/plain'
+        self.response.out.write(ret_json)
+
+    def post(self):
+        self.response.headers['Content-type'] = 'text/plain'
+        try:
+            move = int(cgi.escape(self.request.get('move')))
+            assert move in shape_vector.keys()
+        except (AssertionError, ValueError):
+            self.error(400)
+            self.response.out.write({'code':400, 'error':'Bad move'})
+            return
+        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
+        nx = shape_vector[move][0] + a.x
+        ny = shape_vector[move][1] + a.y
+        t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', nx, ny
+                        ).get()
+        if t is None:
+            self.error(400)
+            self.response.out.write({'code':400, 'error':'No phasing!'})
+            return
+        log.error('t: %s'%t)
+        a.x = nx
+        a.y = ny
+        a.put()
+        ret = {'avatar':a, 'tiles':t}
+        ret_json = json.dumps(ret,indent=2,default=custom_encode)
+        self.response.out.write(ret_json)
 
 def main():
-  application = webapp.WSGIApplication([('/avatar', MainHandler)],
-                                       debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+    application = webapp.WSGIApplication([('/avatar', MainHandler)],
+                                            debug=True)
+    wsgiref.handlers.CGIHandler().run(application)
 
 
 if __name__ == '__main__':
