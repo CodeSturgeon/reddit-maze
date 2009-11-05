@@ -133,6 +133,16 @@ var key_handler = function(event){
     }
 };
 
+var get_name = function(){
+    var name_regex = new RegExp("[\\?&]name=([^&#]*)");
+    var match = name_regex.exec(window.location.href);
+    if(match==null){
+        return null;
+    }else{
+        return match[1];
+    }
+}
+
 var move_avatar = function(direction){
     jQuery.post(pos_url,{move:direction},handle_update,'json');
 };

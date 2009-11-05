@@ -43,7 +43,10 @@ def custom_encode(obj):
 class MainHandler(webapp.RequestHandler):
 
     def get(self, name):
-        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
+        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
+        if a is None:
+            a = Avatar(x=0,y=0,name=name)
+            a.put()
         t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', a.x, a.y
                         ).get()
         ret = {'avatar':a, 'tiles':t}
@@ -60,7 +63,7 @@ class MainHandler(webapp.RequestHandler):
             self.error(400)
             self.response.out.write({'code':400, 'error':'Bad move'})
             return
-        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', 'jack').get()
+        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
         nx = shape_vector[move][0] + a.x
         ny = shape_vector[move][1] + a.y
         t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', nx, ny

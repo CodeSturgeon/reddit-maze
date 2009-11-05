@@ -18,10 +18,15 @@
     </div>
 </body>
 <script type='text/javascript'>
-    var avatar_name = 'jack';
-    var pos_url = '/avatar/'+avatar_name;
+    var pos_url = '/avatar/';
     jQuery(document).ready(function(){
-        jQuery.get(pos_url,{},handle_update,'json');
+        var avatar_name = get_name();
+        if(avatar_name == null){
+            alert("Cannot find name :(");
+        }else{
+            pos_url = pos_url+avatar_name;
+            jQuery.get(pos_url,{},handle_update,'json');
+        }
     })
     jQuery('button').click(move_element_clicker);
     jQuery(window).keydown(key_handler);
