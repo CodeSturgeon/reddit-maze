@@ -1,3 +1,6 @@
+---
+layout: post
+---
 Today I saw a post on the new coding reddit by mythogen about a [maze solver][reddit_solver]. That lead me to [BarcodeNinja's maze post][reddit_maze] that I somehow missed first time round. Cool stuff.
 
 The challange:  
