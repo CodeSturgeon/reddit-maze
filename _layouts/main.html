@@ -12,7 +12,13 @@
         </div>
         <div id="content" class="flesh">
             {{content}}
-            <div id="posts">{{site.posts}}</div>
+            <div id="posts">
+                {% for post in site.posts %}
+                    <div class="post">
+                        {{ item }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
         <div id="footer" class="flesh" >
             <small>Copywrite ME<br/> All rights made in to jam</small></div>
