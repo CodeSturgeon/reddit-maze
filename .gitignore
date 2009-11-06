@@ -1,3 +1,4 @@
 index.yaml
 simplejson
 *.pyc
+bulkloader-*
