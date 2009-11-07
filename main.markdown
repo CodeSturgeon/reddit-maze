@@ -2,4 +2,6 @@
 layout: main
 ---
 
-Who loves testing Jekyll templates and rendering? THIS GUY!
+Mazes. Gotta love them.
+
+### Here is the project news:

@@ -1,3 +1,5 @@
+/* @override http://codesturgeon.github.com/reddit-maze/main.css */
+
 div.flesh {
 	border-width:inherit;
 	border-width:inherit;
@@ -10,7 +12,7 @@ div.flesh {
 }
 
 div#content {
-	background-color:rgb(224, 224, 224);
+	background-color: #ccc;
 	padding:inherit;
 	padding-top:2px;
 	padding-right:2px;
@@ -23,7 +25,7 @@ div#content {
 div#footer {
 	text-align:center;
 	border-bottom-width:2px;
-	font-size:smaller; 
+	font: xx-small sans-serif;
 }
 
 div#menu {
@@ -39,5 +41,18 @@ div#header {
 	padding-left:15px;
 	border-top-width:2px;
 	background-color:rgb(211, 211, 211); 
+}
+
+div.post {
+	background-color: #b3b3b3;
+	margin-right: 3px;
+	margin-left: 3px;
+}
+
+div.post_head {
+	font-weight: bold;
+}
+
+div.post_content {
 }
 
