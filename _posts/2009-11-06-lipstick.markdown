@@ -1,3 +1,5 @@
 Between my regular schedule and babies hopped up on flu vaccine, it's been tough day for making headway.
 
-Made some site pages and got to grips with [Jekyll](http://wiki.github.com/mojombo/jekyll)
+Made some site pages and got to grips with [Jekyll](http://wiki.github.com/mojombo/jekyll) and managed to make something usable.
+
+Added a welcome page to the application making things a touch more user friendly.
