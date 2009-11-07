@@ -15,7 +15,7 @@
             <div id="posts">
                 {% for item in site.posts %}
                     <div class="post_head">
-                        {{ item.date }} - {{item.title}}
+                        {{ item.date | date: "%y%m%d" }} - {{item.title}}
                     </div>
                     <div class="post_content">
                         {{ item.content }}
