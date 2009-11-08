@@ -32,8 +32,10 @@ try {
 </body>
 <script type='text/javascript'>
     var pos_url = '/avatar/';
-    var v = new View(jQuery('#placeholder')[0],{});
-    var m = new Maze(20,20);
+    var vw = get_qvar('width') || 30;
+    var vh = get_qvar('height') || 30;
+    var v = new View(jQuery('#placeholder')[0],{width:vw,height:vh});
+    var m = new Maze(100,100);
     jQuery(document).ready(function(){
         var avatar_name = get_qvar('name');
         if(avatar_name == null){
