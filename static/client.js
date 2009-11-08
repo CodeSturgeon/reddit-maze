@@ -1,4 +1,5 @@
 var View = function(table, params){
+    // CSS viewport window for displaying mazes (based on table)
     var x = params.x || 0;
     var y = params.y || 0;
     var margin = params.margin || 3; // Number of tiles to keep on edges
@@ -56,6 +57,10 @@ var View = function(table, params){
         }
     }(width,height);
     var align_dimension = function(pos, max, offset, size, margin){
+        // Align a view window along an axis
+        // For a given postision (pos) along axis ranged from 0 to (max)
+        // Position a window of length (size), (offset) from 0 along the axis
+        // Try to maintain (margin) units from (pos)
         if(pos<(offset+margin)){
             if((pos-margin)>0){
                 return pos-margin;
@@ -64,7 +69,6 @@ var View = function(table, params){
             }
         };
         if(pos>((offset+size)-(margin+1))){
-            console.log('mm',max,size,(max-size));
             if(pos-(size-(margin+1))>(max-size)){
                 return max-size;
             }else{
@@ -78,8 +82,6 @@ var View = function(table, params){
         var ma = maze.array;
         x = align_dimension(avatar.x, maze.width, x, width, margin);
         y = align_dimension(avatar.y, maze.height, y, height, margin);
-        console.log('view x,y:',x,y);
-        console.log('avatar view x,y:',avatar.x,avatar.y);
         for(var vx=x;vx<(x+width);vx++){
             for(var vy=y;vy<(y+height);vy++){
                 var mt = ma[vx][vy];
@@ -88,12 +90,12 @@ var View = function(table, params){
         };
         jQuery('#'+(avatar.x-x)+'-'+(avatar.y-y)).attr('class', 'avatar');
 
-        console.log('view max x,y:',vx,vy);
     };
 };
 
 
 var Maze = function(width, height){
+    // Virtual map of the known and unknown tiles on in a maze
     var maze_array = [];
     // FIXME var naming
     for(line_no=0;line_no<width;line_no++){
@@ -118,71 +120,17 @@ var Maze = function(width, height){
             };
             ret.push(col);
         };
-        return ret
+        return ret;
     };
     this.array = maze_array;
     this.width = width;
     this.height = height;
-}
-
-var clear_tiles = function(tiles){
-    var shade_tile = function(x,y){
-        var shade_jqo = jQuery('#'+x+'-'+y);
-        if(shade_jqo.length == 1){
-            var shade_class = shade_jqo.attr('class');
-            if(shade_class == 'wall') shade_jqo.attr('class','shade');
-        }
-    };
-    for(tile_no in tiles){
-        tile = tiles[tile_no];
-        var selector = '#'+tile.x+'-'+tile.y;
-        var tile_jqo = jQuery(selector);
-        var tile_class = tile_jqo.attr('class');
-        if(tile_class != 'clear'){ // Skip any we have already cleared
-            tile_jqo.attr('class', 'clear');
-            /*
-            if(tile.shape & 1){ shade_tile(tile.x,tile.y-1); }
-            if(tile.shape & 2){ shade_tile(tile.x+1,tile.y); }
-            if(tile.shape & 4){ shade_tile(tile.x,tile.y+1); }
-            if(tile.shape & 8){ shade_tile(tile.x-1,tile.y); }
-            */
-        }
-    }
 };
 
-var paint_movers = function(json,cls){
-    if(!cls){cls='avatar'};
-    if(json.avatar){
-        var selector = '#'+json.avatar.x+'-'+json.avatar.y;
-        jQuery(selector).attr('class',cls);
-    }
-    if(json.others){
-        if(cls=='avatar'){cls='other'};
-        for(other_no in json.others){
-            var other = json.others[other_no];
-            var selector = '#'+other.x+'-'+other.y;
-            jQuery(selector).attr('class',cls);
-        }
-    }
+var handle_update = function(json){
+    m.update_tiles(json.tiles);
+    v.update(m,json.avatar);
 };
-
-var handle_update = function(){
-    var last_run = 'first_run';
-    return function(json){
-
-        if(last_run=='first_run'){
-            //make_maze(json.maze.width, json.maze.height);
-            //make_maze(20,20);
-        }
-        m.update_tiles(json.tiles);
-        v.update(m,json.avatar);
-        //clear_tiles(json.tiles);
-
-        //paint_movers(last_run,'clear');
-        //paint_movers(json);
-        last_run = json;
-    }
-}();
 
 var move_element_clicker = function(event){ move_avatar(event.target.value); };
 
@@ -211,15 +159,15 @@ var key_handler = function(event){
     }
 };
 
-var get_name = function(){
-    var name_regex = new RegExp("[\\?&]name=([^&#]*)");
+var get_qvar = function(name){
+    // Get a variable (name) from querystring
+    var name_regex = new RegExp("[\\?&]"+name+"=([^&#]*)");
     var match = name_regex.exec(window.location.href);
-    if(match==null){
-        return null;
-    }else{
+    if(match!==null){
         return match[1];
-    }
-}
+    };
+    return null;
+};
 
 var move_avatar = function(direction){
     jQuery.post(pos_url,{move:direction},handle_update,'json');

@@ -35,7 +35,7 @@ try {
     var v = new View(jQuery('#placeholder')[0],{});
     var m = new Maze(20,20);
     jQuery(document).ready(function(){
-        var avatar_name = get_name();
+        var avatar_name = get_qvar('name');
         if(avatar_name == null){
             alert("Cannot find name :(");
         }else{
