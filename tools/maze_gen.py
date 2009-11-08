@@ -38,6 +38,7 @@ def make_maze(width,height,updates):
     blocked=[]
     backtrack=[]
     count = 0
+    total = width*height
     while 1:
         # Clear the current location if needed
         if (x,y) not in cleared:
@@ -93,7 +94,8 @@ def make_maze(width,height,updates):
             # Keep the user informed
             count += 1
             if (count % 500) == 0:
-                print '%sLoops: %s'%(ACL,count),
+                pcom = (float(count)/float(total))*100
+                print '%sLoops: %5d (%5d - %2d%%)'%(ACL, count, total, pcom),
                 sys.stdout.flush()
     if updates:
         print '%sfinal - loops: %d, cleared tiles: %d, blocked tiles: %d'%(
