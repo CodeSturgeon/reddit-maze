@@ -3,6 +3,7 @@ import random
 from optparse import OptionParser
 import simplejson as json
 import sys
+import csv
 
 def dump_maze(width, height, cleared):
     print '#'*(width+2)
@@ -103,7 +104,8 @@ def make_maze(width,height,updates):
     return cleared
 
 def save(name, width, height, cleared):
-    lines = []
+    maze_writer = csv.writer(open('%s.csv'%name,'w'), delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
     view_radius = 3
     for x,y in cleared:
         view = []
@@ -112,10 +114,8 @@ def save(name, width, height, cleared):
                 if (vx,vy) in cleared:
                     view.append({'x':vx, 'y':vy})
 
-        tile_enc = json.dumps(view).replace(',','@').replace('"','%')
-        line = '%d,%d,%s'%(x,y,tile_enc)
-        lines.append(line)
-    open('%s.csv'%name,'w').write('\n'.join(lines))
+        tile_enc = json.dumps(view)
+        maze_writer.writerow([x,y,tile_enc])
 
 def get_options():
     parser = OptionParser()
@@ -136,7 +136,12 @@ def main():
             print 'Making %s'%name
         cleared = make_maze(opts.width,opts.height,updates)
         if not opts.dry_run:
+            if not opts.quiet:
+                print 'Saving...',
+                sys.stdout.flush()
             save(name, opts.width, opts.height, cleared)
+            if not opts.quiet:
+                print 'saved'
         if opts.dump:
             print '--%s--'%name
             dump_maze(opts.width, opts.height, cleared)
