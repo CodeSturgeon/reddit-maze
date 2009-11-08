@@ -143,17 +143,17 @@ var key_handler = function(event){
             break;
         case 37: // Left Arrow
         case 65: // a
-        case 74: //j
+        case 74: // j
             move_avatar(8);
             break;
         case 39: // Right
-        case 68: //d
-        case 76: //l
+        case 68: // d
+        case 76: // l
             move_avatar(2);
             break;
         case 40: // Down
         case 83: // s
-        case 75: //k
+        case 75: // k
             move_avatar(4);
             break;
     }
