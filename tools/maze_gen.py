@@ -23,6 +23,8 @@ def dump_maze(width, height, cleared):
     print '#'*(width+2)
 
 def make_maze(width,height,updates):
+    # ANSI Clear line sequence
+    ACL = '\033[1K\033[0G'
     # Four basic direction vectors
     vectors = [(1,0),(0,1),(-1,0),(0,-1)]
     # Set initial location
@@ -91,9 +93,11 @@ def make_maze(width,height,updates):
             # Keep the user informed
             count += 1
             if (count % 500) == 0:
-                print count
+                print '%sLoops: %s'%(ACL,count),
+                sys.stdout.flush()
     if updates:
-        print 'final',count
+        print '%sfinal - loops: %d, cleared tiles: %d, blocked tiles: %d'%(
+                ACL, count, len(cleared), len(blocked))
     return cleared
 
 def save(name, width, height, cleared):
@@ -129,8 +133,6 @@ def main():
             updates = True
             print 'Making %s'%name
         cleared = make_maze(opts.width,opts.height,updates)
-        if not opts.quiet:
-            print '\nDone making %s'%name
         if not opts.dry_run:
             save(name, opts.width, opts.height, cleared)
         if opts.dump:
