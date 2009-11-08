@@ -25,8 +25,6 @@ def dump_maze(width, height, cleared):
 def make_maze(width,height,updates):
     # Four basic direction vectors
     vectors = [(1,0),(0,1),(-1,0),(0,-1)]
-    # Backtracking offset
-    offset = 0
     # Set initial location
     x=y=0
     # Define maze size
@@ -36,6 +34,7 @@ def make_maze(width,height,updates):
     # Setup tracking lists
     cleared=[]
     blocked=[]
+    backtrack=[]
     count = 0
     while 1:
         # Clear the current location if needed
@@ -75,17 +74,17 @@ def make_maze(width,height,updates):
                 open.append(adj)
 
         # Pick a next move
-        if open == []:
+        if len(open) == 0:
             # No open tiles means we need to backtrack
-            offset += 1
-            if offset > len(cleared):
+            if len(backtrack)==0:
                 # If we have back tracked to the begining... we are done
                 break
             # Set the new position to previous tile
-            x,y=cleared[-offset]
+            x,y=backtrack.pop()
         else:
-            # Open tiles means no back tracking
-            offset = 0
+            if len(open)>1:
+                # This tile can be backtracked too
+                backtrack.append((x,y))
             x,y=random.choice(open)
 
         if updates:
