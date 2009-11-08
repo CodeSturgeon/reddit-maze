@@ -32,6 +32,8 @@ try {
 </body>
 <script type='text/javascript'>
     var pos_url = '/avatar/';
+    var v = new View(jQuery('#placeholder')[0],{});
+    var m = new Maze(20,20);
     jQuery(document).ready(function(){
         var avatar_name = get_name();
         if(avatar_name == null){
