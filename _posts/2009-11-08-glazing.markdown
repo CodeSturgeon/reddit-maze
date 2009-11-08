@@ -1,0 +1,3 @@
+Turns out that the vaccine was a red herring, covering for an ear infection. After getting baby to bed and in to non-secretion coated clothes, I managed to get some headway made.
+
+Major re-write of the html/jquery client to use a window on to the maze, rather than trying to display the maze as a whole. Client capabilities no longer limit maze size. Code much cleaner. Happy.
