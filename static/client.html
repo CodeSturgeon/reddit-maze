@@ -34,8 +34,12 @@ try {
     var pos_url = '/avatar/';
     var vw = Number(get_qvar('width')) || 30;
     var vh = Number(get_qvar('height')) || 30;
-    var v = new View(jQuery('#placeholder')[0],{width:vw,height:vh});
-    var m = new Maze(100,100);
+    var vm = Number(get_qvar('margin')) || 5;
+    var mw = Number(get_qvar('maze_width')) || 909;
+    var mh = Number(get_qvar('maze_height')) || 505;
+
+    var v = new View(jQuery('#placeholder')[0],{width:vw,height:vh,margin:vm});
+    var m = new Maze(mw,mh);
     jQuery(document).ready(function(){
         var avatar_name = get_qvar('name');
         if(avatar_name == null){
