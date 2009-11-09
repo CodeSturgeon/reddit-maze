@@ -1,0 +1,3 @@
+It's release time (4am). I wanted to do something by Monday (close), and current code fulfills all the goals I set. So here we go...
+
+My only major regret is that the client/server communication needs some TLC. Occasionally GAE's datastore habits will make it appear there are walls in thin air. That could be handled better.
