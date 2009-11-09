@@ -2,4 +2,5 @@ index.yaml
 simplejson
 *.pyc
 *.csv
+*.sql3
 bulkloader-*
