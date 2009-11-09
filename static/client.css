@@ -1,4 +1,10 @@
+/* @override http://localhost:8081/static/client.css */
+
 td.wall {
+	background-color: #000;
+}
+
+td.unknown {
 	background-color: #4c4c4c;
 }
 
@@ -13,9 +19,14 @@ td.avatar {
 	background-color: #007eff;
 }
 
+td.trail {
+	background-color: #96c2ff;
+}
+
 td.other {
 	background-color: #9800ff;
 }
+
 td {
 	width: 4px;
 	height: 6px;

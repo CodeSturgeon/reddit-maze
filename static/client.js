@@ -80,6 +80,9 @@ var View = function(table, params){
     this.update = function(maze, avatar){
         // Update view using maze with avatar location
         var ma = maze.array;
+        console.log('avatar',avatar.x,avatar.y);
+        ma[avatar.x][avatar.y] = 'trail';
+        //console.log('lefty',ma[a.x-4][a.y]);
         x = align_dimension(avatar.x, maze.width, x, width, margin);
         y = align_dimension(avatar.y, maze.height, y, height, margin);
         for(var vx=x;vx<(x+width);vx++){
@@ -101,14 +104,60 @@ var Maze = function(width, height){
     for(line_no=0;line_no<width;line_no++){
         var line = [];
         for(col_no=0;col_no<height;col_no++){
-            line[col_no] = 'wall';
+            line[col_no] = 'unknown';
         };
         maze_array[line_no] = line;
     };
     this.update_tiles = function(tiles){
         for(tile_no in tiles){
             tile = tiles[tile_no];
-            maze_array[tile.x][tile.y] = 'clear';
+            if(tile.x===17&&tile.y===44){
+                console.log(tile);
+            };
+            var c = maze_array[tile.x][tile.y];
+            if(c!=='clear'&&c!=='trail'){
+                maze_array[tile.x][tile.y] = 'clear';
+                if(tile.x>0){
+                    var c = maze_array[tile.x-1][tile.y];
+                    if(c==='unknown'){
+                        if(tile.shape & 8){
+                            maze_array[tile.x-1][tile.y] = 'shade';
+                        }else{
+                            maze_array[tile.x-1][tile.y] = 'wall';
+                        };
+                    }
+                };
+                if(tile.x<width){
+                    var c = maze_array[tile.x+1][tile.y];
+                    if(c==='unknown'){
+                        if(tile.shape & 2){
+                            maze_array[tile.x+1][tile.y] = 'shade';
+                        }else{
+                            maze_array[tile.x+1][tile.y] = 'wall';
+                        };
+                    }
+                };
+                if(tile.y>0){
+                    var c = maze_array[tile.x][tile.y-1];
+                    if(c==='unknown'){
+                        if(tile.shape & 1){
+                            maze_array[tile.x][tile.y-1] = 'shade';
+                        }else{
+                            maze_array[tile.x][tile.y-1] = 'wall';
+                        };
+                    }
+                };
+                if(tile.x<height){
+                    var c = maze_array[tile.x][tile.y+1];
+                    if(c==='unknown'){
+                        if(tile.shape & 4){
+                            maze_array[tile.x][tile.y+1] = 'shade';
+                        }else{
+                            maze_array[tile.x][tile.y+1] = 'wall';
+                        };
+                    }
+                };
+            };
         };
     };
     this.get_tiles = function(x,y,width,height){
