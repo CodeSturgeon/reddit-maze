@@ -29,7 +29,10 @@ from google.appengine.ext import webapp
 class DroppedHandler(webapp.RequestHandler):
 
   def get(self):
-    db.delete(Tile.all())
+    tiles = Tile.all()
+    while tiles.count()>0:
+        db.delete(tiles.fetch(500))
+        tiles = Tile.all()
     db.delete(Avatar.all())
     self.response.headers['Content-type'] = 'text/plain'
     self.response.out.write('Dropped!')
