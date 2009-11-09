@@ -13,7 +13,7 @@ x_max = 845 # 844 is last tile
 y_min = 37
 #y_max = y_min + 50
 y_max = 460 # 459 is last tile
-csv_name = 'mini.csv'
+csv_name = 'ninja.csv'
 
 vx=vy=0
 cleared = {}
