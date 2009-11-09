@@ -39,10 +39,10 @@ for x,y in cleared:
             try:
                 shape = cleared[(vx,vy)]
                 if shape == 0:
-                    if cleared.get((vx,vy-1), 9) != 9: shape += 1
-                    if cleared.get((vx+1,vy), 9) != 9: shape += 2
-                    if cleared.get((vx,vy+1), 9) != 9: shape += 4
-                    if cleared.get((vx-1,vy), 9) != 9: shape += 8
+                    if cleared.get((vx,vy-1), 'x') != 'x': shape += 1
+                    if cleared.get((vx+1,vy), 'x') != 'x': shape += 2
+                    if cleared.get((vx,vy+1), 'x') != 'x': shape += 4
+                    if cleared.get((vx-1,vy), 'x') != 'x': shape += 8
                     cleared[(vx,vy)] = shape
                 view.append({'x':vx, 'y':vy, 'shape':shape})
             except KeyError:
@@ -51,10 +51,10 @@ for x,y in cleared:
     # One more time for the local tile
     shape = cleared[(x,y)]
     if shape == 0:
-        if cleared.get((x,y-1), 9) != 9: shape += 1
-        if cleared.get((x+1,y), 9) != 9: shape += 2
-        if cleared.get((x,y+1), 9) != 9: shape += 4
-        if cleared.get((x-1,y), 9) != 9: shape += 8
+        if cleared.get((x,y-1), 'x') != 'x': shape += 1
+        if cleared.get((x+1,y), 'x') != 'x': shape += 2
+        if cleared.get((x,y+1), 'x') != 'x': shape += 4
+        if cleared.get((x-1,y), 'x') != 'x': shape += 8
         cleared[(x,y)] = shape
 
     tile_enc = json.dumps(view)
