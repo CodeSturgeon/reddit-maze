@@ -5,6 +5,7 @@ import simplejson as json
 import sys
 
 f_path = '/Users/fish/Desktop/maze4.png'
+ACL = '\033[1K\033[0G'
 img = Image.open(f_path)
 x_min = 65
 x_max = 845 # 844 is last tile
@@ -39,6 +40,6 @@ for x,y in cleared:
     tile_enc = json.dumps(view)
     maze_writer.writerow([x,y,tile_enc])
     line_no += 1
-    if (line_no % 50) == 0:
-        print line_no
-        sys.exit()
+    if (line_no % 500) == 0:
+        print '%s%d'%(ACL,line_no),
+        sys.stdout.flush()
