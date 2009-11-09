@@ -80,9 +80,7 @@ var View = function(table, params){
     this.update = function(maze, avatar){
         // Update view using maze with avatar location
         var ma = maze.array;
-        console.log('avatar',avatar.x,avatar.y);
         ma[avatar.x][avatar.y] = 'trail';
-        //console.log('lefty',ma[a.x-4][a.y]);
         x = align_dimension(avatar.x, maze.width, x, width, margin);
         y = align_dimension(avatar.y, maze.height, y, height, margin);
         for(var vx=x;vx<(x+width);vx++){
@@ -111,9 +109,6 @@ var Maze = function(width, height){
     this.update_tiles = function(tiles){
         for(tile_no in tiles){
             tile = tiles[tile_no];
-            if(tile.x===17&&tile.y===44){
-                console.log(tile);
-            };
             var c = maze_array[tile.x][tile.y];
             if(c!=='clear'&&c!=='trail'){
                 maze_array[tile.x][tile.y] = 'clear';
