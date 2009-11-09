@@ -86,6 +86,7 @@ class MainHandler(webapp.RequestHandler):
             log.info('Tile cache hit')
         a.x = nx
         a.y = ny
+        a.moves += 1
         a.put()
         ret = {'avatar':a, 'tiles':t}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)

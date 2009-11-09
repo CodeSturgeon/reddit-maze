@@ -11,6 +11,9 @@ class Tile(db.Model):
 class Avatar(db.Model):
     x = db.IntegerProperty(required=True)
     y = db.IntegerProperty(required=True)
+    moves = db.IntegerProperty(default=0)
+    create_timestamp = db.DateTimeProperty(auto_now_add=True)
+    last_timestamp = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     def __repr__(self):
         return '<Avatar %s (%d,%d)>'%(self.name, self.x, self.y)
