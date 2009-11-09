@@ -4,7 +4,8 @@ import wsgiref.handlers
 from google.appengine.ext import webapp
 from google.appengine.api import memcache
 
-from model import Tile, Avatar
+from model import Avatar
+from model import TileZ
 from google.appengine.ext import db
 import simplejson as json
 import cgi
@@ -30,11 +31,11 @@ class MainHandler(webapp.RequestHandler):
             a.put()
         t = memcache.get('%d-%d'%(a.x,a.y))
         if t is None:
-            log.info('Tile cache miss')
-            t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', a.x,
+            log.info('TileZ cache miss')
+            t = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2', a.x,
                             a.y).get()
         else:
-            log.info('Tile cache hit')
+            log.info('TileZ cache hit')
         ret = {'avatar':a, 'tiles':t}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.headers['Content-type'] = 'text/plain'
@@ -54,8 +55,8 @@ class MainHandler(webapp.RequestHandler):
         ny = shape_vector[move][1] + a.y
         t = memcache.get('%d-%d'%(nx,ny))
         if t is None:
-            log.info('Tile cache miss')
-            t = db.GqlQuery('SELECT * FROM Tile WHERE x = :1 AND y = :2', nx,
+            log.info('TileZ cache miss')
+            t = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2', nx,
                             ny).get()
             if t is None:
                 self.error(400)
@@ -63,7 +64,7 @@ class MainHandler(webapp.RequestHandler):
                 return
             memcache.set('%d-%d'%(t.x,t.y),t.serial())
         else:
-            log.info('Tile cache hit')
+            log.info('TileZ cache hit')
         a.x = nx
         a.y = ny
         a.moves += 1
