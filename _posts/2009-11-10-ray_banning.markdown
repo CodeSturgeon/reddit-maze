@@ -1,0 +1,3 @@
+Spent good amount of time researching and working on a line of sight algorithm. If the BCN maze didn't change it's path width, this would be _really_ simple...
+
+After much thought and graph paper experiments, I think shape and overshadowing will yield something nice and simple. If it works, it should scale up gracefully. X-ray specs... your days are numbered.
