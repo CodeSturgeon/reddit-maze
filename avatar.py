@@ -44,12 +44,14 @@ class MainHandler(webapp.RequestHandler):
     def post(self, name):
         self.response.headers['Content-type'] = 'text/plain'
         try:
+            # FIXME escape really needed here? (and below)
             move = int(cgi.escape(self.request.get('move')))
             assert move in shape_vector.keys()
         except (AssertionError, ValueError):
             self.error(400)
             self.response.out.write({'code':400, 'error':'Bad move'})
             return
+        seen = bool(self.request.get('seen',0))
         a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
         nx = shape_vector[move][0] + a.x
         ny = shape_vector[move][1] + a.y
@@ -69,7 +71,9 @@ class MainHandler(webapp.RequestHandler):
         a.y = ny
         a.moves += 1
         a.put()
-        ret = {'avatar':a, 'tiles':t}
+        ret = {'avatar':a}
+        if not seen: ret['tiles'] = t
+        log.error(ret)
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.out.write(ret_json)
 
