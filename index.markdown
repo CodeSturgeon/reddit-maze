@@ -6,7 +6,11 @@ When I saw [BarcodeNinja's maze][reddit_maze] (via [mythogen's posted solver][re
 
 There is now a version fit for public consumption, find it here: [reddit-maze].
 
+The current dev version can be found here: [dev-version].
+
 #### Here is the project news:
+[dev-version]: http://2.latest.reddit-maze.appspot.com/
+
 [reddit-maze]: http://reddit-maze.appspot.com/
 
 [reddit_solver]: http://www.reddit.com/r/coding/comments/a0x3u/hey_reddit_check_out_this_python_maze_solver_i/ "Reddit maze solver thread"
