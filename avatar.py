@@ -44,7 +44,7 @@ class MainHandler(webapp.RequestHandler):
     def post(self, name):
         self.response.headers['Content-type'] = 'text/plain'
         try:
-            # FIXME escape really needed here? (and below)
+            # FIXME escape really needed here?
             move = int(cgi.escape(self.request.get('move')))
             assert move in shape_vector.keys()
         except (AssertionError, ValueError):

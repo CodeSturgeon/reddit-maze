@@ -87,12 +87,12 @@ var View = function(table, params){
             for(var vy=y;vy<(y+height);vy++){
                 var mt = ma[vx][vy];
                 jQuery('#'+(vx-x)+'-'+(vy-y)).attr('class', mt);
-            };
-        };
+            }
+        }
         jQuery('#'+(avatar.x-x)+'-'+(avatar.y-y)).attr('class', 'avatar');
 
-    };
-};
+    }
+}
 
 
 var Maze = function(width, height){
@@ -209,22 +209,33 @@ var get_qvar = function(name){
 };
 
 var nomove = false;
+var avatar = null;
 
 var handle_update = function(json){
+    avatar = json.avatar;
     m.update_tiles(json.tiles);
     v.update(m,json.avatar);
-};
+}
 
 var unblocker = function(){
     nomove = false;
 }
 
+var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]}
+
 var move_avatar = function(direction){
-    if(nomove){
-        return;
-    }
+    if(nomove) return;
     nomove = true;
-    var ajax_cfg = {'url': pos_url, type:'POST', data: {move:direction},
+    var move_data = {move:direction};
+    if(avatar!==null){
+        var v = vectors[direction];
+        var nx = avatar.x + v[0];
+        var ny = avatar.y + v[1];
+        if(m.array[nx][ny]==='trail'){
+            move_data['seen'] = 1;
+        }
+    }
+    var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
             complete: unblocker, success: handle_update, dataType:'json'};
     jQuery.ajax(ajax_cfg);
-};
+}
