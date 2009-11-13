@@ -171,11 +171,6 @@ var Maze = function(width, height){
     this.height = height;
 };
 
-var handle_update = function(json){
-    m.update_tiles(json.tiles);
-    v.update(m,json.avatar);
-};
-
 var move_element_clicker = function(event){ move_avatar(event.target.value); };
 
 var key_handler = function(event){
@@ -213,6 +208,23 @@ var get_qvar = function(name){
     return null;
 };
 
+var nomove = false;
+
+var handle_update = function(json){
+    m.update_tiles(json.tiles);
+    v.update(m,json.avatar);
+};
+
+var unblocker = function(){
+    nomove = false;
+}
+
 var move_avatar = function(direction){
-    jQuery.post(pos_url,{move:direction},handle_update,'json');
+    if(nomove){
+        return;
+    }
+    nomove = true;
+    var ajax_cfg = {'url': pos_url, type:'POST', data: {move:direction},
+            complete: unblocker, success: handle_update, dataType:'json'};
+    jQuery.ajax(ajax_cfg);
 };
