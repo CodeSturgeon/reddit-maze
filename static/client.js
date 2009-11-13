@@ -1,7 +1,9 @@
 var View = function(table, params){
     // CSS viewport window for displaying mazes (based on table)
-    var x = params.x || 0;
-    var y = params.y || 0;
+    var x = params.x || -1;
+    var y = params.y || -1;
+    var ax = params.x || -1;
+    var ay = params.y || -1;
     var margin = params.margin || 3; // Number of tiles to keep on edges
     var width = params.width || 10;
     var height = params.height || 10;
@@ -77,20 +79,34 @@ var View = function(table, params){
         };
         return offset;
     };
-    this.update = function(maze, avatar){
-        // Update view using maze with avatar location
+    this.paint = function(maze){
+        // Update view using maze
         var ma = maze.array;
-        ma[avatar.x][avatar.y] = 'trail';
-        x = align_dimension(avatar.x, maze.width, x, width, margin);
-        y = align_dimension(avatar.y, maze.height, y, height, margin);
         for(var vx=x;vx<(x+width);vx++){
             for(var vy=y;vy<(y+height);vy++){
                 var mt = ma[vx][vy];
                 jQuery('#'+(vx-x)+'-'+(vy-y)).attr('class', mt);
             }
         }
-        jQuery('#'+(avatar.x-x)+'-'+(avatar.y-y)).attr('class', 'avatar');
-
+        jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'avatar');
+    }
+    this.move_avatar = function(maze, avatar){
+        // Update view using maze with avatar location
+        var ma = maze.array;
+        if(ax!==-1){
+            jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'trail');
+        }
+        ax = avatar.x;
+        ay = avatar.y;
+        ma[avatar.x][avatar.y] = 'trail';
+        var nx = align_dimension(ax, maze.width, x, width, margin);
+        var ny = align_dimension(ay, maze.height, y, height, margin);
+        if(nx!==x || ny!==y){
+            x = nx;
+            y = ny;
+            this.paint(maze);
+        }
+        jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'avatar');
     }
 }
 
@@ -103,9 +119,9 @@ var Maze = function(width, height){
         var line = [];
         for(col_no=0;col_no<height;col_no++){
             line[col_no] = 'unknown';
-        };
+        }
         maze_array[line_no] = line;
-    };
+    }
     this.update_tiles = function(tiles){
         for(tile_no in tiles){
             tile = tiles[tile_no];
@@ -209,12 +225,17 @@ var get_qvar = function(name){
 };
 
 var nomove = false;
-var avatar = null;
+var avatar_pos = null;
+
+var first_get = function(json){
+    avatar_pos = json.avatar;
+    m.update_tiles(json.tiles);
+    v.move_avatar(m,json.avatar);
+}
 
 var handle_update = function(json){
-    avatar = json.avatar;
     m.update_tiles(json.tiles);
-    v.update(m,json.avatar);
+    v.paint(m);
 }
 
 var unblocker = function(){
@@ -224,18 +245,22 @@ var unblocker = function(){
 var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]}
 
 var move_avatar = function(direction){
-    if(nomove) return;
+    //if(nomove) return;
     nomove = true;
     var move_data = {move:direction};
-    if(avatar!==null){
-        var v = vectors[direction];
-        var nx = avatar.x + v[0];
-        var ny = avatar.y + v[1];
-        if(m.array[nx][ny]==='trail'){
-            move_data['seen'] = 1;
-        }
+    var dv = vectors[direction];
+    var nx = avatar_pos.x + dv[0];
+    var ny = avatar_pos.y + dv[1];
+    var mt = m.array[nx][ny];
+    if(mt==='trail'){
+        move_data['seen'] = 1;
     }
-    var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
-            complete: unblocker, success: handle_update, dataType:'json'};
-    jQuery.ajax(ajax_cfg);
+    if(mt==='trail' || mt==='clear' || mt==='shade'){
+        avatar_pos.x = nx;
+        avatar_pos.y = ny;
+        v.move_avatar(m,avatar_pos);
+        var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
+                complete: unblocker, success: handle_update, dataType:'json'};
+        jQuery.ajax(ajax_cfg);
+    }
 }

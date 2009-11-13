@@ -46,7 +46,7 @@ try {
             alert("Cannot find name :(");
         }else{
             pos_url = pos_url+avatar_name;
-            jQuery.get(pos_url,{},handle_update,'json');
+            jQuery.get(pos_url,{},first_get,'json');
         }
     })
     jQuery('button').click(move_element_clicker);
