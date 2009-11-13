@@ -202,10 +202,10 @@ var get_qvar = function(name){
     // Get a variable (name) from querystring
     var name_regex = new RegExp("[\\?&]"+name+"=([^&#]*)");
     var match = name_regex.exec(window.location.href);
-    if(match!==null){
-        return match[1];
+    if(match===null){
+        return null;
     };
-    return null;
+    return match[1];
 };
 
 var nomove = false;
