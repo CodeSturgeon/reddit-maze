@@ -234,6 +234,8 @@ var first_get = function(json){
 }
 
 var handle_update = function(json){
+    avatar_pos.moves = a.moves
+    // FIXME graceful null handling for seen=1
     m.update_tiles(json.tiles);
     v.paint(m);
 }
@@ -245,9 +247,9 @@ var unblocker = function(){
 var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]}
 
 var move_avatar = function(direction){
-    //if(nomove) return;
+    if(nomove) return;
     nomove = true;
-    var move_data = {move:direction};
+    var move_data = {move:direction, move_lock:avatar_pos.moves};
     var dv = vectors[direction];
     var nx = avatar_pos.x + dv[0];
     var ny = avatar_pos.y + dv[1];

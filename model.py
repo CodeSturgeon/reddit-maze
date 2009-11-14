@@ -35,4 +35,4 @@ class Avatar(db.Model):
     def __repr__(self):
         return '<Avatar %s (%d,%d)>'%(self.name, self.x, self.y)
     def serial(self):
-        return {'name':self.name, 'x':self.x, 'y':self.y}
+        return {'name':self.name, 'x':self.x, 'y':self.y, 'moves':self.moves}

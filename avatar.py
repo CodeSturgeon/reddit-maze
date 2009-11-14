@@ -43,16 +43,29 @@ class MainHandler(webapp.RequestHandler):
 
     def post(self, name):
         self.response.headers['Content-type'] = 'text/plain'
+        # Get the move direction
         try:
-            # FIXME escape really needed here?
-            move = int(cgi.escape(self.request.get('move')))
+            move = int(self.request.get('move'))
             assert move in shape_vector.keys()
         except (AssertionError, ValueError):
             self.error(400)
             self.response.out.write({'code':400, 'error':'Bad move'})
             return
+        # Get the move number for locking
+        try:
+            move_lock = int(self.request.get('move_lock', 0))
+            assert move_lock != 0
+        except (AssertionError, ValueError):
+            self.error(400)
+            self.response.out.write({'code':400, 'error':'Missing or bad move_lock'})
+            return
         seen = bool(self.request.get('seen',0))
         a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
+        # Check move_lock sanity
+        if (a.moves + 1) != move_lock:
+            self.error(400)
+            self.response.out.write({'code':400, 'error':'Out of step move_lock'})
+            return
         nx = shape_vector[move][0] + a.x
         ny = shape_vector[move][1] + a.y
         t = memcache.get('%d-%d'%(nx,ny))
