@@ -69,14 +69,17 @@ var View = function(table, params){
             }else{
                 return 0;
             }
-        };
+        }
         if(pos>((offset+size)-(margin+1))){
             if(pos-(size-(margin+1))>(max-size)){
                 return max-size;
             }else{
                 return pos-(size-(margin+1));
             }
-        };
+        }
+        if(offset===-1){
+            return 0;
+        }
         return offset;
     };
     this.paint = function(maze){
