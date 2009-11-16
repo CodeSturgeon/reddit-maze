@@ -57,14 +57,16 @@ class MainHandler(webapp.RequestHandler):
             assert move_lock != 0
         except (AssertionError, ValueError):
             self.error(400)
-            self.response.out.write({'code':400, 'error':'Missing or bad move_lock'})
+            self.response.out.write({'code':400,
+                                        'error':'Missing or bad move_lock'})
             return
         seen = bool(self.request.get('seen',0))
         a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
         # Check move_lock sanity
         if (a.moves + 1) != move_lock:
             self.error(400)
-            self.response.out.write({'code':400, 'error':'Out of step move_lock'})
+            self.response.out.write({'code':400,
+                                            'error':'Out of step move_lock'})
             return
         nx = shape_vector[move][0] + a.x
         ny = shape_vector[move][1] + a.y
