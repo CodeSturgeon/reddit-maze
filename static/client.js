@@ -135,9 +135,9 @@ var Maze = function(width, height){
                             maze_array[tile.x-1][tile.y] = 'shade';
                         }else{
                             maze_array[tile.x-1][tile.y] = 'wall';
-                        };
+                        }
                     }
-                };
+                }
                 if(tile.x<width){
                     var c = maze_array[tile.x+1][tile.y];
                     if(c==='unknown'){
@@ -145,9 +145,9 @@ var Maze = function(width, height){
                             maze_array[tile.x+1][tile.y] = 'shade';
                         }else{
                             maze_array[tile.x+1][tile.y] = 'wall';
-                        };
+                        }
                     }
-                };
+                }
                 if(tile.y>0){
                     var c = maze_array[tile.x][tile.y-1];
                     if(c==='unknown'){
@@ -155,9 +155,9 @@ var Maze = function(width, height){
                             maze_array[tile.x][tile.y-1] = 'shade';
                         }else{
                             maze_array[tile.x][tile.y-1] = 'wall';
-                        };
+                        }
                     }
-                };
+                }
                 if(tile.x<height){
                     var c = maze_array[tile.x][tile.y+1];
                     if(c==='unknown'){
@@ -165,27 +165,27 @@ var Maze = function(width, height){
                             maze_array[tile.x][tile.y+1] = 'shade';
                         }else{
                             maze_array[tile.x][tile.y+1] = 'wall';
-                        };
+                        }
                     }
-                };
-            };
-        };
-    };
+                }
+            }
+        }
+    }
     this.get_tiles = function(x,y,width,height){
         var ret = [];
         for(col_no=x;col_no<(x+width);col_no++){
             var col = [];
             for(line_no=y;line_no<(y+height);line_no++){
                 col.push(maze_array[col_no][line_no]);
-            };
+            }
             ret.push(col);
-        };
+        }
         return ret;
-    };
+    }
     this.array = maze_array;
     this.width = width;
     this.height = height;
-};
+}
 
 var move_element_clicker = function(event){ move_avatar(event.target.value); };
 
@@ -212,7 +212,7 @@ var key_handler = function(event){
             move_avatar(4);
             break;
     }
-};
+}
 
 var get_qvar = function(name){
     // Get a variable (name) from querystring
@@ -220,9 +220,9 @@ var get_qvar = function(name){
     var match = name_regex.exec(window.location.href);
     if(match===null){
         return null;
-    };
+    }
     return match[1];
-};
+}
 
 var nomove = false;
 var avatar_pos = null;
@@ -244,7 +244,7 @@ var unblocker = function(){
     nomove = false;
 }
 
-var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]}
+var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]};
 
 var move_avatar = function(direction){
     if(nomove) return;
