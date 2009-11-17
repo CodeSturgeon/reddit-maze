@@ -24,6 +24,8 @@ class TileZ(db.Model):
     view_blob = db.BlobProperty(required=True)
     def serial(self):
         return pickle.loads(self.view_blob)
+    def __repr__(self):
+        return '<TileZ (%d,%d,%d)>'%(self.x, self.y, self.shape)
 
 class Avatar(db.Model):
     x = db.IntegerProperty(required=True)
