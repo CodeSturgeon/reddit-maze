@@ -1,0 +1,3 @@
+- Cleaned up move locking on client.
+- Implemented single move queueing in client.
+- v2 release
