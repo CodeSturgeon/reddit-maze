@@ -61,33 +61,34 @@ class MainHandler(webapp.RequestHandler):
                                         'error':'Missing or bad move_lock'})
             return
         seen = bool(self.request.get('seen',0))
-        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
+        avatar = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1',name).get()
         # Check move_lock sanity
-        if (a.moves + 1) != move_lock:
+        if (avatar.moves + 1) != move_lock:
             self.error(400)
             self.response.out.write({'code':400,
                                             'error':'Out of step move_lock'})
             return
-        nx = shape_vector[move][0] + a.x
-        ny = shape_vector[move][1] + a.y
-        t = memcache.get('%d-%d'%(nx,ny))
-        if t is None:
+        new_x = shape_vector[move][0] + avatar.x
+        new_y = shape_vector[move][1] + avatar.y
+        tiles = memcache.get('%d-%d'%(new_x,new_y))
+        if tiles is None:
             log.info('TileZ cache miss')
-            t = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2', nx,
-                            ny).get()
-            if t is None:
+            tile = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2',
+                                    new_x, new_y).get()
+            if tile is None:
                 self.error(400)
                 self.response.out.write({'code':400, 'error':'No phasing!'})
                 return
-            memcache.set('%d-%d'%(t.x,t.y),t.serial())
+            tiles = tile.serial()
+            memcache.set('%d-%d'%(new_x,new_y),tiles)
         else:
             log.info('TileZ cache hit')
-        a.x = nx
-        a.y = ny
-        a.moves += 1
-        a.put()
-        ret = {'avatar':a}
-        if not seen: ret['tiles'] = t
+        avatar.x = new_x
+        avatar.y = new_y
+        avatar.moves += 1
+        avatar.put()
+        ret = {'avatar':avatar}
+        if not seen: ret['tiles'] = tiles
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.out.write(ret_json)
 
