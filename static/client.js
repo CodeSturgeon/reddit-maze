@@ -237,7 +237,6 @@ var first_get = function(json){
 }
 
 var handle_update = function(json){
-    avatar_pos.moves = json.avatar.moves
     // FIXME graceful null handling for seen=1
     m.update_tiles(json.tiles);
     v.paint(m);
@@ -245,30 +244,41 @@ var handle_update = function(json){
 
 var unblocker = function(){
     nomove = false;
+    if(move_list.length>0){
+        moveit();
+    }
 }
 
 var vectors = {1:[0,-1],2:[1,0],4:[0,1],8:[-1,0]};
 
+var move_list = [];
+
 var move_avatar = function(direction){
-    //if(nomove) return;
-    nomove = true;
     var move_data = {move:direction};
     var dv = vectors[direction];
     var nx = avatar_pos.x + dv[0];
     var ny = avatar_pos.y + dv[1];
     var mt = m.array[nx][ny];
-    if(mt==='trail'){
-        move_data['seen'] = 1;
-    }
     if(mt==='trail' || mt==='clear' || mt==='shade'){
+        if(mt==='trail'){
+            move_data['seen'] = 1;
+        }
         avatar_pos.x = nx;
         avatar_pos.y = ny;
         avatar_pos.moves += 1;
         move_data['move_lock'] = avatar_pos.moves;
         v.move_avatar(m,avatar_pos);
-        var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
-                complete: unblocker, success: handle_update, dataType:'json',
-                error:function(XHR, tst, err){alert(XHR.responseText)}};
-        jQuery.ajax(ajax_cfg);
+        move_list.push(move_data);
+        moveit();
     }
+}
+
+var moveit = function(){
+    if(nomove) return;
+    nomove = true;
+    var move_data = move_list.shift();
+    var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
+            complete: unblocker, success: handle_update, dataType:'json',
+            error:function(XHR, tst, err){alert(XHR.responseText)} };
+    jQuery.ajax(ajax_cfg);
 }
