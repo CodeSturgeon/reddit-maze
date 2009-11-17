@@ -88,7 +88,6 @@ class MainHandler(webapp.RequestHandler):
         a.put()
         ret = {'avatar':a}
         if not seen: ret['tiles'] = t
-        log.error(ret)
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.out.write(ret_json)
 
