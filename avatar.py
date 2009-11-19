@@ -43,55 +43,72 @@ class MainHandler(webapp.RequestHandler):
 
     def post(self, name):
         req_body = json.loads(self.request.body)
-        # Get the move direction
-        try:
-            move = int(req_body.get('move',0))
-            assert move in shape_vector.keys()
-        except (AssertionError, ValueError):
-            self.error(400)
-            self.response.out.write({'code':400, 'error':'Bad move'})
-            return
-        # Get the move number for locking
-        try:
-            move_lock = int(req_body.get('move_lock', 0))
-            assert move_lock != 0
-        except (AssertionError, ValueError):
-            self.error(400)
-            self.response.out.write({'code':400,
-                                        'error':'Missing or bad move_lock'})
-            return
-        seen = bool(req_body.get('seen',0))
+        log.error(req_body)
+        moves = req_body['moves']
         avatar = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1',name).get()
-        # Check move_lock sanity
-        if (avatar.moves + 1) != move_lock:
-            self.error(400)
-            self.response.out.write({'code':400,
-                                            'error':'Out of step move_lock'})
-            return
-        new_x = shape_vector[move][0] + avatar.x
-        new_y = shape_vector[move][1] + avatar.y
-        tiles = memcache.get('%d-%d'%(new_x,new_y))
-        if tiles is None:
-            log.info('TileZ cache miss')
-            tile = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2',
-                                    new_x, new_y).get()
-            if tile is None:
+        pre_tile = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2',
+                                        avatar.x, avatar.y).get()
+        ret_tiles = {}
+        for move in moves:
+            # Get the move direction
+            try:
+                move_shape = int(move.get('move',0))
+                assert move_shape in shape_vector.keys()
+            except (AssertionError, ValueError):
                 self.error(400)
-                self.response.out.write({'code':400, 'error':'No phasing!'})
+                self.response.out.write({'code':400, 'error':'Bad move'})
                 return
-            tiles = tile.serial()
-            memcache.set('%d-%d'%(new_x,new_y),tiles)
-        else:
-            log.info('TileZ cache hit')
-        avatar.x = new_x
-        avatar.y = new_y
-        avatar.moves += 1
-        avatar.put()
+            # Get the move number for locking
+            try:
+                move_lock = int(move.get('move_lock', 0))
+                assert move_lock != 0
+            except (AssertionError, ValueError):
+                self.error(400)
+                self.response.out.write({'code':400,
+                                        'error':'Missing or bad move_lock'})
+                return
+            seen = bool(move.get('seen',0))
+            # Check move_lock sanity
+            if (avatar.moves + 1) != move_lock:
+                self.error(400)
+                err_str = 'Out of step, expected (%d), got (%d)'%(
+                                                    avatar.moves+1, move_lock)
+                self.response.out.write({'code':400,
+                                            'error':'Out of step move_lock'})
+                return
+            new_x = shape_vector[move_shape][0] + avatar.x
+            new_y = shape_vector[move_shape][1] + avatar.y
+            tiles = memcache.get('%d-%d'%(new_x,new_y))
+            if tiles is None:
+                log.info('TileZ cache miss')
+                tile = db.GqlQuery(
+                                'SELECT * FROM TileZ WHERE x = :1 AND y = :2',
+                                        new_x, new_y).get()
+                if tile is None:
+                    self.error(400)
+                    self.response.out.write(
+                                        {'code':400, 'error':'No phasing!'})
+                    return
+                tiles = tile.serial()
+                memcache.set('%d-%d'%(new_x,new_y),tiles)
+            else:
+                log.info('TileZ cache hit')
+            avatar.x = new_x
+            avatar.y = new_y
+            avatar.moves += 1
+            if not seen:
+                for dt in tiles:
+                    ret_tiles[(dt['x'],dt['y'])] = dt['shape']
+            else:
+                log.info('seen tile')
+
+        for t in pre_tile.serial():
+            ret_tiles.pop((t['x'],t['y']),0)
+            
         ret = {'avatar':avatar}
-        if not seen:
-            ret['tiles'] = tiles
-        else:
-            log.info('seen tile')
+        ret['tiles'] = [{'x':t[0],'y':t[1],'shape':ret_tiles[t]}
+                                                            for t in ret_tiles]
+        avatar.put()
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.headers['Content-type'] = 'application/json'
         self.response.out.write(ret_json)
