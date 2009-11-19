@@ -38,14 +38,14 @@ class MainHandler(webapp.RequestHandler):
             log.info('TileZ cache hit')
         ret = {'avatar':a, 'tiles':t}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
-        self.response.headers['Content-type'] = 'text/plain'
+        self.response.headers['Content-type'] = 'application/json'
         self.response.out.write(ret_json)
 
     def post(self, name):
-        self.response.headers['Content-type'] = 'text/plain'
+        req_body = json.loads(self.request.body)
         # Get the move direction
         try:
-            move = int(self.request.get('move'))
+            move = int(req_body.get('move',0))
             assert move in shape_vector.keys()
         except (AssertionError, ValueError):
             self.error(400)
@@ -53,14 +53,14 @@ class MainHandler(webapp.RequestHandler):
             return
         # Get the move number for locking
         try:
-            move_lock = int(self.request.get('move_lock', 0))
+            move_lock = int(req_body.get('move_lock', 0))
             assert move_lock != 0
         except (AssertionError, ValueError):
             self.error(400)
             self.response.out.write({'code':400,
                                         'error':'Missing or bad move_lock'})
             return
-        seen = bool(self.request.get('seen',0))
+        seen = bool(req_body.get('seen',0))
         avatar = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1',name).get()
         # Check move_lock sanity
         if (avatar.moves + 1) != move_lock:
@@ -88,8 +88,12 @@ class MainHandler(webapp.RequestHandler):
         avatar.moves += 1
         avatar.put()
         ret = {'avatar':avatar}
-        if not seen: ret['tiles'] = tiles
+        if not seen:
+            ret['tiles'] = tiles
+        else:
+            log.info('seen tile')
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
+        self.response.headers['Content-type'] = 'application/json'
         self.response.out.write(ret_json)
 
 def main():

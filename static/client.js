@@ -276,9 +276,10 @@ var move_avatar = function(direction){
 var moveit = function(){
     if(nomove) return;
     nomove = true;
-    var move_data = move_list.shift();
+    var move_data = JSON.stringify(move_list.shift());
     var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
             complete: unblocker, success: handle_update, dataType:'json',
+            contentType:'application/json', processData: false,
             error:function(XHR, tst, err){alert(XHR.responseText)} };
     jQuery.ajax(ajax_cfg);
 }
