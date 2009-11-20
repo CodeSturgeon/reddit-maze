@@ -22,7 +22,21 @@ def custom_encode(obj):
     except AttributeError:
         raise TypeError(repr(obj) + "Yuky JSON!")
 
+class HTTPException(Exception):
+    pass
+
+class HTTPBadRequest(HTTPException):
+    code = 400
+
+class HTTPConflict(HTTPException):
+    code = 409
+
 class MainHandler(webapp.RequestHandler):
+
+    def err(self, err_code, err_str):
+        self.response.headers['Content-type'] = 'application/json'
+        self.error(err_code)
+        self.response.out.write({'code':err_code, 'error':err_str})
 
     def get(self, name):
         a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
@@ -42,6 +56,21 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(ret_json)
 
     def post(self, name):
+        try:
+            self._post(name)
+        except HTTPException, e:
+            self.err(e.code,e.message)
+        except DeadlineExceededError, e:
+            log.error('DeadlineExceeded!')
+            log.exception(e)
+            self.err(500,'Sorry... This was killed by App Engine for running'
+                         ' for over 30 seconds.')
+        except db.Timeout, e:
+            log.error('Datastore timeout. %s'%e.message)
+            log.exception(e)
+            self.err(500,'Sorry... the data store timed out')
+
+    def _post(self, name):
         req_body = json.loads(self.request.body)
         log.error(req_body)
         moves = req_body['moves']
@@ -55,27 +84,20 @@ class MainHandler(webapp.RequestHandler):
                 move_shape = int(move.get('move',0))
                 assert move_shape in shape_vector.keys()
             except (AssertionError, ValueError):
-                self.error(400)
-                self.response.out.write({'code':400, 'error':'Bad move'})
-                return
+                raise HTTPBadRequest('Bad move value. Should be one of: %s'%
+                                                        shape_vector.keys())
             # Get the move number for locking
             try:
                 move_lock = int(move.get('move_lock', 0))
                 assert move_lock != 0
             except (AssertionError, ValueError):
-                self.error(400)
-                self.response.out.write({'code':400,
-                                        'error':'Missing or bad move_lock'})
-                return
+                raise HTTPBadRequest('Missing or bad move_lock')
             seen = bool(move.get('seen',0))
             # Check move_lock sanity
             if (avatar.moves + 1) != move_lock:
-                self.error(400)
                 err_str = 'Out of step, expected (%d), got (%d)'%(
                                                     avatar.moves+1, move_lock)
-                self.response.out.write({'code':400,
-                                            'error':'Out of step move_lock'})
-                return
+                raise HTTPBadRequest(err_str)
             new_x = shape_vector[move_shape][0] + avatar.x
             new_y = shape_vector[move_shape][1] + avatar.y
             tiles = memcache.get('%d-%d'%(new_x,new_y))
