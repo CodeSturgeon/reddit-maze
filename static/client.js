@@ -240,10 +240,10 @@ var handle_update = function(json){
     // FIXME graceful null handling for seen=1
     m.update_tiles(json.tiles);
     v.paint(m);
+    nomove = false;
 }
 
 var unblocker = function(){
-    nomove = false;
     if(move_list.length>0){
         moveit();
     }
@@ -258,7 +258,7 @@ var move_avatar = function(direction){
     var dv = vectors[direction];
     var nx = avatar_pos.x + dv[0];
     var ny = avatar_pos.y + dv[1];
-    var mt = m.array[nx][ny];
+    var mt = m.array[nx][ny]; // Throws under load... nx=undef
     if(mt==='trail' || mt==='clear' || mt==='shade'){
         if(mt==='trail'){
             move_data['seen'] = 1;
@@ -273,6 +273,18 @@ var move_avatar = function(direction){
     }
 }
 
+var retry = '';
+
+var handle_error = function(xhr, text, err){
+    if(xhr.status>=500){
+        //alert('500 error... click ok to retry');
+        jQuery.ajax(retry);
+    } else {
+        alert(xhr.responseText);
+        nomove = false;
+    }
+}
+
 var moveit = function(){
     if(nomove) return;
     nomove = true;
@@ -281,6 +293,7 @@ var moveit = function(){
     var ajax_cfg = {'url': pos_url, type:'POST', data: move_data,
             complete: unblocker, success: handle_update, dataType:'json',
             contentType:'application/json', processData: false,
-            error:function(XHR, tst, err){alert(XHR.responseText)} };
+            error:handle_error};
+    retry = ajax_cfg;
     jQuery.ajax(ajax_cfg);
 }
