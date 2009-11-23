@@ -33,3 +33,4 @@ skip_files:
 - ^(.*/)?\..*
 - ^(.*/)?.*\.bak$
 - ^(.*/)?tools/.*
+- ^(.*/)?gae_console.py$
