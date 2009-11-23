@@ -9,7 +9,7 @@ There is now a version fit for public consumption, find it here: [reddit-maze].
 The current dev version can be found here: [dev-version].
 
 #### Here is the project news:
-[dev-version]: http://3.latest.reddit-maze.appspot.com/
+[dev-version]: http://4.latest.reddit-maze.appspot.com/
 
 [reddit-maze]: http://reddit-maze.appspot.com/
 
