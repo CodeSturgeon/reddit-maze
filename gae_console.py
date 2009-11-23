@@ -26,7 +26,8 @@ def delete_all(kind_name):
     """Delete all entities of a Kind"""
     kind_class = getattr(model, kind_name)
     k_count = kind_class.all().count()
-    done = 0
+    done = 0 # Number of deletes pulled off
+    err_count = 0 # Concecutive errors
     while k_count > 0:
         # One hit for every 500 and an extra for 1000
         if k_count == 1000:
@@ -47,10 +48,12 @@ def delete_all(kind_name):
                 return
             except db.Timeout:
                 print 'X',
-                time.sleep(timeout_backoff)
+                err_count += 1
+                time.sleep(timeout_backoff*err_count)
             else:
                 done += 1
                 hits -= 1
+                err_count = 0
                 print '.',
             sys.stdout.flush()
         print '(%d deleted)'%(done*500)
