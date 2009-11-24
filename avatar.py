@@ -5,7 +5,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 
 from model import Avatar
-from model import TileZ
+from model import Tile
 from google.appengine.ext import db
 import simplejson as json
 import cgi
@@ -39,17 +39,13 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write({'code':err_code, 'error':err_str})
 
     def get(self, name):
-        a = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1', name).get()
+        a = db.get(db.Key.from_path('Avatar', name))
         if a is None:
-            a = Avatar(x=0,y=0,name=name)
+            a = Avatar(x=0,y=0,key_name=name)
             a.put()
         t = memcache.get('%d-%d'%(a.x,a.y))
         if t is None:
-            log.info('TileZ cache miss')
-            t = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2', a.x,
-                            a.y).get()
-        else:
-            log.info('TileZ cache hit')
+            t = db.get(db.Key.from_path('Tile','%d-%d'%(a.x,a.y)))
         ret = {'avatar':a, 'tiles':t}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.headers['Content-type'] = 'application/json'
@@ -64,7 +60,7 @@ class MainHandler(webapp.RequestHandler):
             log.error('DeadlineExceeded!')
             log.exception(e)
             self.err(500,'Sorry... This was killed by App Engine for running'
-                         ' for over 30 seconds.')
+                         ' too long.')
         except db.Timeout, e:
             log.error('Datastore timeout. %s'%e.message)
             log.exception(e)
@@ -72,11 +68,10 @@ class MainHandler(webapp.RequestHandler):
 
     def _post(self, name):
         req_body = json.loads(self.request.body)
-        log.error(req_body)
         moves = req_body['moves']
-        avatar = db.GqlQuery('SELECT * FROM Avatar WHERE name = :1',name).get()
-        pre_tile = db.GqlQuery('SELECT * FROM TileZ WHERE x = :1 AND y = :2',
-                                        avatar.x, avatar.y).get()
+        avatar = db.get(db.Key.from_path('Avatar', name))
+        pre_tile = db.get(db.Key.from_path('Tile','%d-%d'%(
+                                                        avatar.x,avatar.y)))
         ret_tiles = {}
         for move in moves:
             # Get the move direction
@@ -102,10 +97,7 @@ class MainHandler(webapp.RequestHandler):
             new_y = shape_vector[move_shape][1] + avatar.y
             tiles = memcache.get('%d-%d'%(new_x,new_y))
             if tiles is None:
-                log.info('TileZ cache miss')
-                tile = db.GqlQuery(
-                                'SELECT * FROM TileZ WHERE x = :1 AND y = :2',
-                                        new_x, new_y).get()
+                tile = db.get(db.Key.from_path('Tile','%d-%d'%(new_x,new_y)))
                 if tile is None:
                     self.error(400)
                     self.response.out.write(
@@ -113,16 +105,12 @@ class MainHandler(webapp.RequestHandler):
                     return
                 tiles = tile.serial()
                 memcache.set('%d-%d'%(new_x,new_y),tiles)
-            else:
-                log.info('TileZ cache hit')
             avatar.x = new_x
             avatar.y = new_y
             avatar.moves += 1
             if not seen:
                 for dt in tiles:
                     ret_tiles[(dt['x'],dt['y'])] = dt['shape']
-            else:
-                log.info('seen tile')
 
         for t in pre_tile.serial():
             ret_tiles.pop((t['x'],t['y']),0)

@@ -8,13 +8,16 @@ import os
 import sys
 sys.path.insert(0,os.curdir)
 
-from model import TileX
+from model import Tile
 
 class TileLoader(bulkloader.Loader):
-  def __init__(self):
-    bulkloader.Loader.__init__(self, 'TileZ',
+    def __init__(self):
+        bulkloader.Loader.__init__(self, 'Tile',
                         [('x', int), ('y', int), ('shape', int),
-                         ('view_blob', lambda v: pickle.dumps(json.loads(v)))
+                         ('view_blob', str)
                         ])
+
+    def generate_key(self, i, values):
+        return '%d-%d'%(int(values[0]), int(values[1]))
 
 loaders = [TileLoader]
