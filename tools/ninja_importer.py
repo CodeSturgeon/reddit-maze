@@ -14,11 +14,11 @@ y_min = 37
 
 if True:
     # Mini mode
-    csv_name = 'mini.csv'
+    csv_name = 'mini_bcnm.csv'
     x_max = x_min + 50
     y_max = y_min + 50
 else:
-    csv_name = 'mini.csv'
+    csv_name = 'full_bcnm.csv'
     x_max = 845 # 844 is last tile
     y_max = 460 # 459 is last tile
 
