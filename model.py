@@ -1,5 +1,32 @@
 from google.appengine.ext import db
+from google.appengine.api import memcache
 import simplejson as json
+
+def get_tile(maze_name, x, y):
+    key_path = ('Maze', maze_name, 'Tile', '%d-%d'%(x,y))
+    key = db.Key.from_path(*key_path)
+    return get_entity(key)
+
+def get_avatar(name):
+    key_path = ('Avatar', name)
+    key = db.Key.from_path(*key_path)
+    avatar = get_entity(key)
+    if avatar is None:
+        avatar = Avatar(key_name = name)
+        set_entity(avatar)
+    return avatar
+
+def get_entity(key):
+    entity = memcache.get(str(key))
+    if entity is None:
+        entity = db.get(key)
+    if entity is not None:
+        memcache.set(str(key),entity)
+    return entity
+
+def set_entity(entity):
+    entity.put()
+    memcache.set(str(entity.key()), entity)
 
 class Maze(db.Model):
     width = db.IntegerProperty(required=True, indexed=False)
