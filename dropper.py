@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import wsgiref.handlers
-from model import TileZ
+from model import TileZ, Avatar
 from google.appengine.ext import db
 
 from google.appengine.ext import webapp
@@ -55,6 +55,38 @@ class DroppedHandler(webapp.RequestHandler):
     for x,y,s in l3:
         tile = TileZ.gql('WHERE x = :1 AND y = :2 AND shape = :3',x,y,s).get()
     self.response.out.write('Done xys gets %d\n'
+                                            %quota.get_request_api_cpu_usage())
+
+    l4 = [[u'Avatar', 255856L],
+        [u'Avatar', 316456L],
+        [u'Avatar', 331576L],
+        [u'Avatar', 339456L],
+        [u'Avatar', 425981L],
+        [u'Avatar', 425982L],
+        [u'Avatar', 425983L],
+        [u'Avatar', 425984L],
+        [u'Avatar', 425985L],
+        [u'Avatar', 425986L]]
+
+    for avatar_path in l4:
+        avatar = db.get(db.Key.from_path(*avatar_path))
+    self.response.out.write('Done a key gets %d\n'
+                                            %quota.get_request_api_cpu_usage())
+
+    l5 = [u'test_name',
+        u'a',
+        u'zem',
+        u'yp',
+        u'T',
+        u'hobofood',
+        u'woop',
+        u'j',
+        u'bleh',
+        u'Ahaaa']
+
+    for a_name in l5:
+        avatar = Avatar.gql('WHERE name = :1',a_name).get()
+    self.response.out.write('Done a property gets %d\n'
                                             %quota.get_request_api_cpu_usage())
 
 
