@@ -33,12 +33,30 @@ class HTTPBadRequest(HTTPException):
 class HTTPConflict(HTTPException):
     code = 409
 
-class MainHandler(webapp.RequestHandler):
-
+class ExceptionHandler(webapp.RequestHandler):
     def err(self, err_code, err_str):
         self.response.headers['Content-type'] = 'application/json'
         self.error(err_code)
         self.response.out.write({'code':err_code, 'error':err_str})
+
+def exceptable(meth):
+    def decorated(self, *args):
+        try:
+            return meth(self, *args)
+        except HTTPException, e:
+            self.err(e.code,e.message)
+        except DeadlineExceededError, e:
+            log.error('DeadlineExceeded!')
+            log.exception(e)
+            self.err(500,'Sorry... This was killed by App Engine for'
+                            'running too long.')
+        except db.Timeout, e:
+            log.error('Datastore timeout. %s'%e.message)
+            log.exception(e)
+            self.err(500,'Sorry... the data store timed out')
+    return decorated
+
+class MainHandler(ExceptionHandler):
 
     def get(self, name):
         a = db.get(db.Key.from_path('Avatar', name))
@@ -53,22 +71,8 @@ class MainHandler(webapp.RequestHandler):
         self.response.headers['Content-type'] = 'application/json'
         self.response.out.write(ret_json)
 
+    @exceptable
     def post(self, name):
-        try:
-            self._post(name)
-        except HTTPException, e:
-            self.err(e.code,e.message)
-        except DeadlineExceededError, e:
-            log.error('DeadlineExceeded!')
-            log.exception(e)
-            self.err(500,'Sorry... This was killed by App Engine for running'
-                         ' too long.')
-        except db.Timeout, e:
-            log.error('Datastore timeout. %s'%e.message)
-            log.exception(e)
-            self.err(500,'Sorry... the data store timed out')
-
-    def _post(self, name):
         req_body = json.loads(self.request.body)
         moves = req_body['moves']
         avatar = db.get(db.Key.from_path('Avatar', name))
