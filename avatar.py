@@ -4,6 +4,8 @@ import wsgiref.handlers
 from google.appengine.ext import webapp
 from google.appengine.api import memcache
 
+from google.appengine.runtime import DeadlineExceededError
+
 from model import Avatar
 from model import Tile
 from google.appengine.ext import db
