@@ -6,4 +6,4 @@
 
 API is noticeably faster in the new regime :)
 
-Fun fact, getting an entity by equality testing on two properties is 2.6x slower than getting by key. Getting an entity using a single property is also 2.6x slower. Using three properties... again 2.6x slower. Maybe the differences are more distinct at larger volumes... but for my uses the results seem pretty clear. 
+Fun fact, getting an entity by equality testing on two properties is 2.6x slower than getting by key. Getting an entity using a single property is also 2.6x slower than getting by key. Using three properties... again 2.6x slower. Maybe the differences are more distinct at larger volumes...
