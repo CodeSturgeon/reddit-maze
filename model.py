@@ -16,7 +16,7 @@ class Tile(db.Model):
     x = db.IntegerProperty(required=True, indexed=False)
     y = db.IntegerProperty(required=True, indexed=False)
     shape = db.IntegerProperty(required=True, indexed=False)
-    view_blob = db.BlobProperty(required=True)
+    view_blob = db.TextProperty(required=True)
     def serial(self):
         return json.loads(self.view_blob)
     def __repr__(self):

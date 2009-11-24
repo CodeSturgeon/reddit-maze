@@ -7,13 +7,20 @@ import sys
 f_path = '/Users/fish/Desktop/maze4.png'
 ACL = '\033[1K\033[0G'
 img = Image.open(f_path)
+
+# Accounting for borders
 x_min = 65
-#x_max = x_min + 50
-x_max = 845 # 844 is last tile
 y_min = 37
-#y_max = y_min + 50
-y_max = 460 # 459 is last tile
-csv_name = 'ninja.csv'
+
+if True:
+    # Mini mode
+    csv_name = 'mini.csv'
+    x_max = x_min + 50
+    y_max = y_min + 50
+else:
+    csv_name = 'mini.csv'
+    x_max = 845 # 844 is last tile
+    y_max = 460 # 459 is last tile
 
 vx=vy=0
 cleared = {}
@@ -58,7 +65,7 @@ for x,y in cleared:
         cleared[(x,y)] = shape
 
     tile_enc = json.dumps(view)
-    maze_writer.writerow([x,y,shape,tile_enc])
+    maze_writer.writerow([x,y,shape,'bcn',tile_enc])
     line_no += 1
     if (line_no % 50) == 0:
         print '%s%d'%(ACL,line_no),
