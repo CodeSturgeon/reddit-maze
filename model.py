@@ -22,9 +22,13 @@ class Tile(db.Model):
     def __repr__(self):
         return '<Tile (%d,%d,%d)>'%(self.x, self.y, self.shape)
 
+class TileZ(Tile):
+    # For pre-4 compatability when using remote api
+    pass
+
 class Avatar(db.Model):
-    x = db.IntegerProperty(required=True, indexed=False)
-    y = db.IntegerProperty(required=True, indexed=False)
+    x = db.IntegerProperty(default=0, indexed=False)
+    y = db.IntegerProperty(default=0, indexed=False)
     moves = db.IntegerProperty(default=0, indexed=False)
     create_timestamp = db.DateTimeProperty(auto_now_add=True, indexed=False)
     last_timestamp = db.DateTimeProperty(auto_now=True, indexed=False)
