@@ -277,7 +277,7 @@ var retry = '';
 
 var handle_error = function(xhr, text, err){
     if(xhr.status>=500){
-        //alert('500 error... click ok to retry');
+        alert('500 error... click ok to retry\n'+xhr.responseText);
         jQuery.ajax(retry);
     } else {
         alert(xhr.responseText);
