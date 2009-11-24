@@ -11,7 +11,6 @@ from exceptable import exceptable, ExceptableHandler, HTTPBadRequest,\
                         HTTPConflict
 
 from model import Avatar, Tile, get_tile, get_avatar, set_entity
-from model import Tile
 
 import logging
 log = logging.getLogger()
