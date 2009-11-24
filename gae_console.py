@@ -13,6 +13,8 @@ app_id = 'reddit-maze'
 timeout_backoff = 3 # In seconds
 username = None
 password = None
+host = '%s.appspot.com' % app_id
+host = 'localhost:8081'
 
 # GAE init
 sys.path.append(gae_loc)
@@ -68,6 +70,5 @@ def auth_func():
         password = getpass.getpass('Password:')
     return username, password
 
-host = '%s.appspot.com' % app_id
 
 remote_api_stub.ConfigureRemoteDatastore(app_id, '/remote_api', auth_func,host)
