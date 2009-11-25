@@ -92,6 +92,9 @@ var View = function(table, params){
                 var mt = ma[vx][vy];
                 cell_name = (vx-x)+'-'+(vy-y);
                 cell = cells[cell_name].className = mt;
+                if(cell.className !== mt){
+                    cell.className = mt;
+                }
             }
         }
         cell = cells[(ax-x)+'-'+(ay-y)].className = 'avatar';
