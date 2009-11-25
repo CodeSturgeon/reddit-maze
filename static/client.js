@@ -7,6 +7,7 @@ var View = function(table, params){
     var margin = params.margin || 3; // Number of tiles to keep on edges
     var width = params.width || 10;
     var height = params.height || 10;
+    var cells = {};
     var setup = function(width, height, indexes){
         // Setup the view table
         var tab = table;
@@ -44,6 +45,7 @@ var View = function(table, params){
                 var new_cell = document.createElement('td');
                 new_cell.className = 'wall';
                 new_cell.id = lop2+'-'+lop;
+                cells[new_cell.id] = new_cell;
                 new_cell.appendChild(document.createTextNode(' '));
                 body_row.appendChild(new_cell);
             }
@@ -88,16 +90,17 @@ var View = function(table, params){
         for(var vx=x;vx<(x+width);vx++){
             for(var vy=y;vy<(y+height);vy++){
                 var mt = ma[vx][vy];
-                jQuery('#'+(vx-x)+'-'+(vy-y)).attr('class', mt);
+                cell_name = (vx-x)+'-'+(vy-y);
+                cell = cells[cell_name].className = mt;
             }
         }
-        jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'avatar');
+        cell = cells[(ax-x)+'-'+(ay-y)].className = 'avatar';
     }
     this.move_avatar = function(maze, avatar){
         // Update view using maze with avatar location
         var ma = maze.array;
         if(ax!==-1){
-            jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'trail');
+            cell = cells[(ax-x)+'-'+(ay-y)].className = 'trail';
         }
         ax = avatar.x;
         ay = avatar.y;
@@ -109,7 +112,7 @@ var View = function(table, params){
             y = ny;
             this.paint(maze);
         }
-        jQuery('#'+(ax-x)+'-'+(ay-y)).attr('class', 'avatar');
+        cell = cells[(ax-x)+'-'+(ay-y)].className = 'avatar';
     }
 }
 
