@@ -1,4 +1,5 @@
 from google.appengine.ext import webapp
+from google.appengine.runtime import DeadlineExceededError
 
 class HTTPException(Exception):
     pass

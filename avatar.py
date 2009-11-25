@@ -2,7 +2,6 @@
 import wsgiref.handlers
 
 from google.appengine.ext import webapp, db
-from google.appengine.runtime import DeadlineExceededError
 
 import simplejson as json
 import cgi
