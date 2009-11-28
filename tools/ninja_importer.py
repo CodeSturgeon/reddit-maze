@@ -12,7 +12,7 @@ img = Image.open(f_path)
 x_min = 65
 y_min = 37
 
-if True:
+if False:
     # Mini mode
     csv_name = 'mini_bcnm.csv'
     x_max = x_min + 50
