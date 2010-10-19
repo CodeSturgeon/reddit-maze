@@ -15,6 +15,7 @@ import logging
 log = logging.getLogger()
 
 shape_vector = {1: (0,-1), 4: (0,1), 8: (-1,0), 2: (1,0)}
+maze_name ='bogart'
 
 def custom_encode(obj):
     try:
@@ -27,8 +28,7 @@ class MainHandler(ExceptableHandler):
 
     def get(self, name):
         avatar = get_avatar(name)
-        maze_name = 'bcn'
-        base_tile = get_tile('bcn', avatar.x, avatar.y)
+        base_tile = get_tile(maze_name, avatar.x, avatar.y)
         ret = {'avatar':avatar, 'tiles':base_tile}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
         self.response.headers['Content-type'] = 'application/json'
@@ -39,7 +39,7 @@ class MainHandler(ExceptableHandler):
         req_body = json.loads(self.request.body)
         moves = req_body['moves']
         avatar = get_avatar(name)
-        pre_tile = get_tile('bcn', avatar.x, avatar.y)
+        pre_tile = get_tile(maze_name, avatar.x, avatar.y)
         ret_tiles = {}
         for move in moves:
             # Get the move direction
@@ -63,7 +63,7 @@ class MainHandler(ExceptableHandler):
                 raise HTTPBadRequest(err_str)
             new_x = shape_vector[move_shape][0] + avatar.x
             new_y = shape_vector[move_shape][1] + avatar.y
-            tile = get_tile('bcn', new_x, new_y)
+            tile = get_tile(maze_name, new_x, new_y)
             if tile is None:
                 err_str = 'Cannot move into wall (move: %d)'%move_lock
                 raise HTTPBadRequest(err_str)
