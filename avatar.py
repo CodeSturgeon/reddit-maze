@@ -15,7 +15,10 @@ import logging
 log = logging.getLogger()
 
 shape_vector = {1: (0,-1), 4: (0,1), 8: (-1,0), 2: (1,0)}
+
+# FIXME this should be part of the avatar
 maze_name ='bogart'
+#maze_name = 'bcn'
 
 def move_avatar(name, moves, response, jsonp_callback = ''):
     avatar = get_avatar(name)
@@ -88,15 +91,21 @@ class MainHandler(ExceptableHandler):
 
     def get(self, name):
         jsonp_callback = self.request.get('jsonp_callback')
-        if jsonp_callback != '':
-            moves = json.loads(self.request.get('moves'))
-            log.debug(self.request.get('moves'))
+        if self.request.get('moves') != '':
+            log.error('-%s-'%self.request.get('moves')[2:])
+            moves = json.loads(self.request.get('moves')[2:])
             return move_avatar(name, moves, self.response, jsonp_callback)
         avatar = get_avatar(name)
         base_tile = get_tile(maze_name, avatar.x, avatar.y)
         ret = {'avatar':avatar, 'tiles':base_tile}
         ret_json = json.dumps(ret,indent=2,default=custom_encode)
-        self.response.headers['Content-type'] = 'application/json'
+
+        if jsonp_callback == '':
+            self.response.headers['Content-type'] = 'application/json'
+        else:
+            self.response.headers['Content-type'] = 'application/javascript'
+            ret_json = "%s(\n%s\n);"%(jsonp_callback,ret_json)
+
         self.response.out.write(ret_json)
 
 
