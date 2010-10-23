@@ -1,0 +1,5 @@
+Hacked JSONP support in. It's going to need some cleanup some time in the future.
+
+Wrote a wiki page on how to use the JSONP support. Again, it's going to need some work before it's "good".
+
+Considering the week I've had, I consider getting this done; glorious victory.
