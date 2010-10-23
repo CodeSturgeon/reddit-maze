@@ -92,8 +92,8 @@ class MainHandler(ExceptableHandler):
     def get(self, name):
         jsonp_callback = self.request.get('jsonp_callback')
         if self.request.get('moves') != '':
-            log.error('-%s-'%self.request.get('moves')[2:])
-            moves = json.loads(self.request.get('moves')[2:])
+            log.error('-%s-'%self.request.get('moves'))
+            moves = json.loads(self.request.get('moves'))
             return move_avatar(name, moves, self.response, jsonp_callback)
         avatar = get_avatar(name)
         base_tile = get_tile(maze_name, avatar.x, avatar.y)
