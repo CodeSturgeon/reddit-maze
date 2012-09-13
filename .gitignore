@@ -3,4 +3,5 @@ simplejson
 *.pyc
 *.csv
 *.sql3
+*.png
 bulkloader-*
